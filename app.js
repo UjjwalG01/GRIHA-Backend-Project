@@ -29,7 +29,7 @@ app.use(express.static("public"));
 
 app.use("/api/user", require("./app/routes/routes.user"));
 app.use("/api/admin", require("./app/routes/route.admin"));
-// app.use(auth);
+app.use(auth);
 app.use("/api/place", require("./app/routes/routes.place"));
 
 app.listen(port, () => {
