@@ -101,6 +101,7 @@ exports.deletePlace = async (req, res) => {
 
 exports.getPlace = async (req, res) => {
   try {
+    // if (!req.user) return res.status(400).json({ status: "error" });
     const place = await Place.findById(req.params.id);
     res.status(200).json({
       status: "success",

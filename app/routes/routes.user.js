@@ -8,7 +8,7 @@ router.post("/register", userRoutes.register);
 
 router.post("/login", userRoutes.login);
 
-router.post("/:id/logout", userRoutes.logout);
+router.delete("/:id", userRoutes.logout);
 
 router.get("/profile", userRoutes.profile);
 

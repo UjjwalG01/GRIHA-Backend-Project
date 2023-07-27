@@ -58,6 +58,7 @@ exports.login = async (req, res) => {
     const payload = {
       sub: user._id,
       email: user.email,
+      role: user.role,
       iat: Math.floor(Date.now() / 1000),
     };
 
@@ -65,9 +66,9 @@ exports.login = async (req, res) => {
     const refresh_token = await generateRefreshToken(payload);
     user.password = undefined;
 
-    req.session.user = user;
+    req.user = user;
 
-    res.status(200).json({
+    res.status(200).cookie("token", access_token).json({
       status: "success",
       data: {
         user,
@@ -83,57 +84,30 @@ exports.login = async (req, res) => {
   }
 };
 
-// Backup Login
-// exports.login = async (req, res) => {
-//   const { email, password } = req.body;
-//   try {
-//     const user = await User.findOne({ email });
-//     if (user) {
-//       const match = await bcrypt.compare(password, user.password);
-//       if (match) {
-//         req.session.user = user;
-//         res.status(200).redirect("/");
-//       } else {
-//         res.status(400).json({
-//           status: "error",
-//           data: err.message,
-//         });
-//       }
-//     }
-//   } catch (err) {
-//     res.status(400).json({
-//       status: "error",
-//       data: err.message,
-//     });
-//   }
-// };
-
 exports.logout = async (req, res) => {
-  if (req.session.user) {
-    delete req.session.user;
+  try {
+    res.clearCookie("token").json({ message: "User logged out" });
+  } catch (err) {
+    res.status(400).json({
+      status: "error",
+      message: "Error in logging out",
+    });
   }
-  res.redirect("/login");
 };
 
 exports.profile = async (req, res) => {
   try {
-    if (req.session?.user) {
-      const { email } = await req.session.user;
-      const loggedInUser = await User.find({ email });
-      if (loggedInUser) {
-        res.json({
-          status: "success",
-          data: loggedInUser,
-        });
-      } else {
-        res.status(404).json({
-          status: "error",
-          data: "User not logged in",
-        });
+    const { token } = req.cookies;
+    jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET,
+      {},
+      async (err, decoded) => {
+        if (err) res.status(400).json({ message: "Invalid Token" });
+        const { _id, name, email, role } = await User.findById(decoded.sub);
+        res.json({ _id, name, email, role });
       }
-    } else {
-      res.status(400).json(null);
-    }
+    );
   } catch (err) {
     res.status(404).json({
       status: "error",
