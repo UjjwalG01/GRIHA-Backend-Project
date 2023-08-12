@@ -16,12 +16,18 @@ exports.show = async (req, res) => {
   }
 };
 
+exports.upload = async (req, res) => {
+  try {
+  } catch (err) {}
+};
+
 exports.createPlace = async (req, res) => {
   try {
     const {
       title,
       address,
       description,
+      price,
       extraInfo,
       checkIn,
       checkOut,
@@ -45,6 +51,7 @@ exports.createPlace = async (req, res) => {
       title,
       address,
       description,
+      price,
       extraInfo,
       checkIn,
       checkOut,

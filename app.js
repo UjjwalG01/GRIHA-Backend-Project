@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
 const fileUpload = require("express-fileupload");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
@@ -11,6 +12,7 @@ const auth = require("./app/middleware/authMiddleware");
 
 connect();
 
+app.use(cors());
 app.use(
   expressSession({
     secret: "secret",
