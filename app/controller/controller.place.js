@@ -1,7 +1,8 @@
 const uuid = require("uuid").v4;
 const Place = require("../model/model.place");
+const fileUploadHelper = require("../helper/helper.file");
 
-exports.show = async (req, res) => {
+exports.index = async (req, res) => {
   try {
     const places = await Place.find();
     res.status(200).json({
@@ -16,9 +17,20 @@ exports.show = async (req, res) => {
   }
 };
 
-exports.upload = async (req, res) => {
+exports.show = async (req, res) => {
   try {
-  } catch (err) {}
+    // must be authorized to see this page
+    const places = await Place.find();
+    res.status(200).json({
+      status: "success",
+      data: places,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "error",
+      message: err.message,
+    });
+  }
 };
 
 exports.createPlace = async (req, res) => {
@@ -34,19 +46,28 @@ exports.createPlace = async (req, res) => {
       maxGuests,
       perks,
     } = req.body;
-    const photos = req.files.photo;
+    const photos = req.files?.photo;
+    // console.log(req.files);
 
     let images = [];
-    for (const photo of photos) {
-      const ext = await photo.name.split(".")[1];
-      const path = `/uploads/img${uuid()}.${ext}`;
+    if (photos.length > 0) {
+      for (const photo of photos) {
+        // const ext = await photo.name.split(".")[1];
+        const path = `/uploads/img${uuid()}.jpg}`;
+        images.push(path);
+      }
+      await Promise.all(
+        photos.map(async (photo, index) => {
+          photo.mv(`public${images[index]}`);
+        })
+      );
+    } else {
+      // const ext = await photos.name.split(".")[1];
+      const path = `/uploads/img${uuid()}.jpg`;
       images.push(path);
+      photos.mv(`public/${path}`);
     }
-    await Promise.all(
-      photos.map(async (photo, index) => {
-        await photo.mv(`public${images[index]}`);
-      })
-    );
+
     const newPlace = await Place.create({
       title,
       address,
@@ -59,6 +80,8 @@ exports.createPlace = async (req, res) => {
       maxGuests,
       perks,
     });
+
+    // console.log(newPlace);
 
     await newPlace.save();
     res.status(200).json({
@@ -93,7 +116,7 @@ exports.updatePlace = async (req, res) => {
 exports.deletePlace = async (req, res) => {
   try {
     const deletedItem = await Place.findByIdAndDelete(req.params.id);
-    console.log("Item deleted", deletedItem);
+    // console.log("Item deleted", deletedItem);
     res.status(200).json({
       status: "success",
       data: deletedItem,

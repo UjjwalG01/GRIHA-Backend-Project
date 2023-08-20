@@ -13,16 +13,16 @@ const auth = require("./app/middleware/authMiddleware");
 connect();
 
 app.use(cors());
-app.use(
-  expressSession({
-    secret: "secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-    },
-  })
-);
+// app.use(
+//   expressSession({
+//     secret: "secret",
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       httpOnly: true,
+//     },
+//   })
+// );
 app.use(fileUpload());
 app.use(cookieParser());
 app.use(express.json());
@@ -30,9 +30,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
 
 app.use("/api/user", require("./app/routes/routes.user"));
-app.use(auth);
+// app.use(auth);
 app.use("/api/admin", require("./app/routes/route.admin"));
 app.use("/api/place", require("./app/routes/routes.place"));
+app.use("/api/place/bookings", require("./app/routes/route.booking"));
 
 app.listen(port, () => {
   console.log("Server listening at " + port);

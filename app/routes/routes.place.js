@@ -2,9 +2,11 @@ const router = require("express").Router();
 
 const allPlaces = require("../controller/controller.place");
 
-router.get("/", allPlaces.show);
+router.get("/", allPlaces.index);
 
-router.post("/upload", allPlaces.upload);
+router.get("/user-place", allPlaces.show);
+
+// router.post("/upload", allPlaces.upload);
 router.post("/create", allPlaces.createPlace);
 
 router.put("/:id", allPlaces.updatePlace);

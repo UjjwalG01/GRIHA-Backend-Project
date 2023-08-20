@@ -14,10 +14,13 @@ exports.register = async (req, res) => {
     // Check if the user is already registered
     const userExists = await User.findOne({ email });
     if (userExists) {
-      res.status(400);
-      throw new Error(`User Already exists`);
+      res.status(400).json({
+        status: 400,
+        message: "Email already registered",
+      });
+      return;
     }
-
+    console.log("hello");
     const newUser = await User.create({
       name,
       email,
