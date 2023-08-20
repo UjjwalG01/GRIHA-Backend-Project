@@ -30,8 +30,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
 
 app.use("/api/user", require("./app/routes/routes.user"));
+<<<<<<< HEAD
 // app.use(auth);
 app.use("/api/admin", require("./app/routes/route.admin"));
+=======
+app.use("/api/admin", require("./app/routes/route.admin"));
+app.use(auth);
+>>>>>>> 1ed31f30f64b2e37c79b7eef62b1df43071c560e
 app.use("/api/place", require("./app/routes/routes.place"));
 app.use("/api/place/bookings", require("./app/routes/route.booking"));
 
